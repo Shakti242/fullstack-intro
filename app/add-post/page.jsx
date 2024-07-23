@@ -1,33 +1,27 @@
 'use client'
-import styles from '@/app/page.module.css';
+import styles from '@/app/page.module.css'
 import React, { useState } from 'react';
-
 
 export default function AddPost() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [message, setMessage] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    // Make the API request
-    const response = await fetch('app/api/addPost', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ title, content }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setMessage(data.message);
-      // Reset the form fields
-      setTitle('');
-      setContent('');
-    } else {
-      setMessage('Failed to add post');
+    // Handle form submission
+    console.log('Title:', title);
+    console.log('Content:', content);
+    try{
+        fetch('/api/add-post', {method: 'POST', headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({title, content}) } )
+    } catch (error){
+        console.error(error)
     }
+    // Reset the form fields
+    setTitle('');
+    setContent('');
   };
 
   return (
@@ -53,7 +47,6 @@ export default function AddPost() {
         </div>
         <button type="submit">Submit</button>
       </form>
-      {message && <p>{message}</p>}
     </main>
   );
 }
