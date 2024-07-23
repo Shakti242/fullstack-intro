@@ -1,11 +1,12 @@
-import Image from "next/image";
 import styles from "./page.module.css";
 import prisma from "@/lib/prisma"
+import Post from "./component/Post";
+import Link from "next/link";
  
 async function getPosts(){
   const posts = await prisma.post.findMany({
     where: {published: true},
-    include:{
+    include: {
       author: {
         select: {name: true}
       }
@@ -19,6 +20,7 @@ export default async function Home() {
   console.log({posts})
   return (
     <main className={styles.main}>
+      <Link href ={'/add-post'}>Add Post</Link>
       <h1>Feed</h1>
       {
         posts.map((post) => {
@@ -28,7 +30,7 @@ export default async function Home() {
             id={post.id}
             title={post.title}
             content={post.content}
-            authorName={post.author.name}
+            authorName={post.authorName}
             />
           )
         }
