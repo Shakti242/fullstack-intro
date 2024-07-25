@@ -1,40 +1,55 @@
 'use client'
 import styles from '@/app/page.module.css'
-import React, { useState } from 'react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function AddPost() {
-  const [title, setTitle] = useState('');
+export default function AddPost(){
+    const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const router = useRouter()
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission
-    console.log('Title:', title);
-    console.log('Content:', content);
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
+  };
+
+  const handleContentChange = (event) => {
+    setContent(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    
     try{
-        fetch('/api/add-post', {method: 'POST', headers: {
+        await fetch('/api/add-post', {
+            method: 'POST', 
+            headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({title, content}) } )
+            },
+            body: JSON.stringify({title, content}) })
+            
+        router.refresh()
     } catch (error){
         console.error(error)
     }
-    // Reset the form fields
+
     setTitle('');
     setContent('');
   };
 
-  return (
-    <main className={styles.main}>
-      <h1>Add Post</h1>
-      <form onSubmit={handleSubmit}>
+    return (
+        <main className={styles.main}>
+            <Link href={'/'}>View Feed</Link>
+        <h1>Add Post</h1>
+        <form onSubmit={handleSubmit}>
         <div>
           <label htmlFor="title">Title:</label>
           <input
             type="text"
             id="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={handleTitleChange}
+            required
           />
         </div>
         <div>
@@ -42,11 +57,12 @@ export default function AddPost() {
           <textarea
             id="content"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
-          ></textarea>
+            onChange={handleContentChange}
+            required
+          />
         </div>
         <button type="submit">Submit</button>
       </form>
     </main>
-  );
+    )
 }
