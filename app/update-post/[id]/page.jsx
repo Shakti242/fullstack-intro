@@ -12,7 +12,7 @@
 //     const router = useRouter();
 //     const { id } = useParams();
 
-    
+
 //         if (id) {
 //             fetch(`/api/posts/${id}`) // Ensure this matches the route
 //                 .then(response => {
@@ -37,9 +37,9 @@
 //         }
 //      [id];
 
-    // const handleTitleChange = (event) => {
-    //     setTitle(event.target.value);
-    // };
+// const handleTitleChange = (event) => {
+//     setTitle(event.target.value);
+// };
 
 //     const handleContentChange = (event) => {
 //         setContent(event.target.value);
@@ -57,8 +57,8 @@
 //                 },
 //                 body: JSON.stringify({ title, content }),
 //             });
-            
-           
+
+
 
 //             if (!response.ok) {
 //                 throw new Error('Failed to update post');
@@ -116,44 +116,44 @@ import { useRouter } from 'next/navigation';
 import styles from '@/app/page.module.css';
 // get value of title from url and  store it in variable apple
 const query = new URLSearchParams(window.location.search);
-  const id = query.get('id');
+const id = query.get('id');
 let apple = query.get('title');
 let content = query.get('content');
 const saveData = () => {
-    console.log ("hello")
+  console.log("hello")
 }
 
 
 function Update() {
   return (
     <div>
-        <form onSubmit={saveData} >
+      <form onSubmit={saveData} >
         <div className={styles.formGroup}>
-                       <label htmlFor="title" className={styles.label}>Title:</label>
-                        <input
-                            type="text"
-                            id="title"
-                            // value={title}
-                            value={apple}
-                           // onChange={handleTitleChange}
-                            required
-                            className={styles.input}
-                        />
-                    </div>
-                    <div className={styles.formGroup}>
-                       <label htmlFor="content" className={styles.label}>Content:</label>
-                         <textarea
-                            id="content"
-                            // value={content}
-                            value={content}
-                            // onChange={handleContentChange}
-                            required
-                            className={styles.textarea}
-                        />
-                    </div>
-                    <button type="submit">Save</button>
+          <label htmlFor="title" className={styles.label}>Title:</label>
+          <input
+            type="text"
+            id="title"
+            // value={title}
+            value={apple}
+            // onChange={handleTitleChange}
+            required
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="content" className={styles.label}>Content:</label>
+          <textarea
+            id="content"
+            // value={content}
+            value={content}
+            // onChange={handleContentChange}
+            required
+            className={styles.textarea}
+          />
+        </div>
+        <button type="submit">Save</button>
 
-        </form>
+      </form>
     </div>
 
   )
