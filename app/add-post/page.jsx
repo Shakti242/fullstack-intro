@@ -1,68 +1,107 @@
-'use client'
-import styles from '@/app/page.module.css'
+'use client';
+import styles from '@/app/page.module.css';
 import Link from 'next/link';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation'; // Use these hooks to get the params from the URL
 
-export default function AddPost(){
+export default function UpdatePostPage() {
     const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const router = useRouter()
+    const [content, setContent] = useState('');
+    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const { id } = useParams(); // Get the postId from URL params
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value);
-  };
+    useEffect(() => {
+        if (id) {
+            // Fetch post data and update state
+            fetch(`/api/posts/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Post not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setTitle(data.title || '');
+                    setContent(data.content || '');
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error('Error fetching post data:', err);
+                    setLoading(false);
+                });
+        } else {
+            setLoading(false);
+        }
+    }, [id]);
 
-  const handleContentChange = (event) => {
-    setContent(event.target.value);
-  };
+    const handleTitleChange = (event) => {
+        setTitle(event.target.value);
+    };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    
-    try{
-        await fetch('/api/add-post', {
-            method: 'POST', 
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({title, content}) })
-            
-        router.refresh()
-    } catch (error){
-        console.error(error)
-    }
+    const handleContentChange = (event) => {
+        setContent(event.target.value);
+    };
 
-    setTitle('');
-    setContent('');
-  };
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setLoading(true);
+
+        try {
+            const response = await fetch(`/api/posts/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, content }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update post');
+            }
+
+            router.refresh(); // Refresh the page or redirect
+        } catch (error) {
+            console.error('Error updating post:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <main className={styles.main}>
-            <Link href={'/'}>View Feed</Link>
-        <h1>Add Post</h1>
-        <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="title">Title:</label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={handleTitleChange}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="content">Content:</label>
-          <textarea
-            id="content"
-            value={content}
-            onChange={handleContentChange}
-            required
-          />
-        </div>
-        <button type="submit">Submit</button>
-      </form>
-    </main>
-    )
+            <Link href={'/'} className={styles.link}>View Feed</Link>
+            <h1 className={styles.heading}>Update Post</h1>
+            {loading ? (
+                <div className={styles.loading}>Loading...</div>
+            ) : (
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="title" className={styles.label}>Title:</label>
+                        <input
+                            type="text"
+                            id="title"
+                            value={title}
+                            onChange={handleTitleChange}
+                            required
+                            className={styles.input}
+                        />
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="content" className={styles.label}>Content:</label>
+                        <textarea
+                            id="content"
+                            value={content}
+                            onChange={handleContentChange}
+                            required
+                            className={styles.textarea}
+                        />
+                    </div>
+                    <button type="submit" disabled={loading} className={styles.button}>
+                        {loading ? 'Updating...' : 'Update Post'}
+                    </button>
+                </form>
+            )}
+        </main>
+    );
 }
